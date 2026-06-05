@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Users, UserCheck, CalendarOff, TrendingUp, Zap, Settings, LayoutDashboard, ArrowUpRight, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -14,12 +15,6 @@ export const Route = createFileRoute("/")({
 });
 
 // Mock values – swap with template/server data later
-const data = {
-  total_employees: 48,
-  present_today: 41,
-  leave_today: 5,
-  attendance_rate: 85,
-};
 
 type Stat = {
   label: string;
@@ -29,16 +24,34 @@ type Stat = {
   delta: string;
 };
 
-const stats: Stat[] = [
+
+
+function Dashboard() {
+  const [data, setData] = useState({
+    total_employees: 0,
+    present_today: 0,
+    leave_today: 0,
+    attendance_rate: 0,
+  });
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/dashboard/")
+      .then((res) => res.json())
+      .then((result) => setData(result))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+  const stats: Stat[] = [
   { label: "Total Employees", value: String(data.total_employees), icon: Users, bg: "bg-[var(--color-lilac)]", delta: "+2 this week" },
   { label: "Present Today", value: String(data.present_today), icon: UserCheck, bg: "bg-[var(--color-mint)]", delta: "On schedule" },
   { label: "On Leave", value: String(data.leave_today), icon: CalendarOff, bg: "bg-[var(--color-coral)]", delta: "3 approved" },
   { label: "Attendance Rate", value: `${data.attendance_rate}%`, icon: TrendingUp, bg: "bg-[var(--color-bolt)]", delta: "▲ 4% vs last wk" },
 ];
-
-function Dashboard() {
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" });
-
   return (
     <div className="min-h-screen text-foreground">
       {/* NAV */}
@@ -110,7 +123,7 @@ function Dashboard() {
             </div>
           ))}
         </section>
-
+          
         {/* PANELS */}
         <section className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Today's summary */}
@@ -126,6 +139,7 @@ function Dashboard() {
               <SummaryTile value={data.leave_today} label="Leave" tone="bg-coral" />
               <SummaryTile value={`${data.attendance_rate}%`} label="Rate" tone="bg-bolt" />
             </div>
+            
 
             {/* Attendance bar */}
             <div className="mt-8">
@@ -166,7 +180,9 @@ function Dashboard() {
         © {new Date().getFullYear()} Tinkerhub — Learn. Make. Share.
       </footer>
     </div>
+    
   );
+  
 }
 
 function SummaryTile({ value, label, tone }: { value: string | number; label: string; tone: string }) {
