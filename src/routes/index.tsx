@@ -24,7 +24,7 @@ const data = {
 type Stat = {
   label: string;
   value: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   bg: string;
   delta: string;
 };
@@ -178,7 +178,7 @@ function SummaryTile({ value, label, tone }: { value: string | number; label: st
   );
 }
 
-function ActionBtn({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string }>; label: string }) {
+function ActionBtn({ icon: Icon, label }: { icon: React.ComponentType<{ className?: string; strokeWidth?: number }>; label: string }) {
   return (
     <button className="brutal-hover flex w-full items-center justify-between rounded-2xl border-2 border-background/20 bg-background/5 px-4 py-3 text-left text-sm font-semibold hover:bg-bolt hover:text-ink">
       <span className="flex items-center gap-3">
