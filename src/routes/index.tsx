@@ -97,7 +97,7 @@ function Dashboard() {
   };
 
   return (
-  return (
+
     <div className="min-h-screen text-foreground">
       {/* NAV */}
       <header className="sticky top-0 z-30 border-b-2 border-ink bg-background/90 backdrop-blur">
