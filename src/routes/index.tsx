@@ -33,9 +33,11 @@ function Dashboard() {
     leave_today: 0,
     attendance_rate: 0,
   });
+  const [resolvedApiUrl, setResolvedApiUrl] = useState("");
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    setResolvedApiUrl(apiUrl);
     
     const fetchDashboard = () => {
       fetch(`${apiUrl}/api/dashboard/`)
@@ -187,6 +189,11 @@ function Dashboard() {
 
       <footer className="mx-auto max-w-7xl px-6 pb-10 pt-4 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
         © {new Date().getFullYear()} Tinkerhub — Learn. Make. Share.
+        {resolvedApiUrl && (
+          <div className="mt-2 lowercase opacity-50">
+            API: {resolvedApiUrl}
+          </div>
+        )}
       </footer>
     </div>
     
