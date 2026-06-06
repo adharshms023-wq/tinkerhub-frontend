@@ -63,6 +63,40 @@ function Dashboard() {
   { label: "On Leave", value: String(data.leave_today), icon: CalendarOff, bg: "bg-[var(--color-coral)]", delta: "3 approved" },
   { label: "Attendance Rate", value: `${data.attendance_rate}%`, icon: TrendingUp, bg: "bg-[var(--color-bolt)]", delta: "▲ 4% vs last wk" },
 ];
+
+  const handleMarkAttendance = async () => {
+    try {
+      const resp = await fetch(`${resolvedApiUrl}/api/mark_attendance/`, { method: "POST" });
+      if (!resp.ok) throw new Error('Failed to mark attendance');
+      const data = await resp.json();
+      console.log('Mark attendance response', data);
+      // Refresh dashboard data after marking attendance
+      fetch(`${resolvedApiUrl}/api/dashboard/`)
+        .then((res) => res.json())
+        .then((result) => setData(result))
+        .catch((err) => console.error(err));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleExportReport = async () => {
+    try {
+      const resp = await fetch(`${resolvedApiUrl}/api/export_report/`);
+      if (!resp.ok) throw new Error('Failed to export report');
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'attendance_report.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return (
   return (
     <div className="min-h-screen text-foreground">
       {/* NAV */}
@@ -107,12 +141,12 @@ function Dashboard() {
               Monitor the Tinkerhub crew — who's in, who's out, and how the team is showing up today.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <button className="brutal-sm brutal-hover inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-semibold text-background">
-                Mark Attendance <ArrowUpRight className="h-4 w-4" />
-              </button>
-              <button className="brutal-sm brutal-hover inline-flex items-center gap-2 rounded-full bg-background px-5 py-2.5 font-semibold">
-                Export Report
-              </button>
+                <button onClick={handleMarkAttendance} className="brutal-sm brutal-hover inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 font-semibold text-background">
+                  Mark Attendance <ArrowUpRight className="h-4 w-4" />
+                </button>
+                <button onClick={handleExportReport} className="brutal-sm brutal-hover inline-flex items-center gap-2 rounded-full bg-background px-5 py-2.5 font-semibold">
+                  Export Report
+                </button>
             </div>
           </div>
         </section>
@@ -175,9 +209,33 @@ function Dashboard() {
             <p className="mt-1 text-sm opacity-70">Jump straight to the tools you use most.</p>
 
             <div className="mt-6 space-y-3">
-              <ActionBtn icon={Users} label="Manage Employees" />
-              <ActionBtn icon={Settings} label="Admin Panel" />
-              <ActionBtn icon={CalendarOff} label="Leave Requests" />
+              <a href="/employees" className="brutal-hover flex w-full items-center justify-between rounded-2xl border-2 border-background/20 bg-background/5 px-4 py-3 text-left text-sm font-semibold hover:bg-bolt hover:text-ink">
+                <span className="flex items-center gap-3">
+                  <span className="brutal-sm flex h-9 w-9 items-center justify-center rounded-xl bg-bolt text-ink">
+                    <Users className="h-4 w-4" />
+                  </span>
+                  Manage Employees
+                </span>
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+              <a href="/admin" className="brutal-hover flex w-full items-center justify-between rounded-2xl border-2 border-background/20 bg-background/5 px-4 py-3 text-left text-sm font-semibold hover:bg-bolt hover:text-ink">
+                <span className="flex items-center gap-3">
+                  <span className="brutal-sm flex h-9 w-9 items-center justify-center rounded-xl bg-bolt text-ink">
+                    <Settings className="h-4 w-4" />
+                  </span>
+                  Admin Panel
+                </span>
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+              <a href="/leaves" className="brutal-hover flex w-full items-center justify-between rounded-2xl border-2 border-background/20 bg-background/5 px-4 py-3 text-left text-sm font-semibold hover:bg-bolt hover:text-ink">
+                <span className="flex items-center gap-3">
+                  <span className="brutal-sm flex h-9 w-9 items-center justify-center rounded-xl bg-bolt text-ink">
+                    <CalendarOff className="h-4 w-4" />
+                  </span>
+                  Leave Requests
+                </span>
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
             </div>
 
             <div className="mt-8 border-t border-background/20 pt-4 font-mono text-[11px] uppercase tracking-widest opacity-60">
