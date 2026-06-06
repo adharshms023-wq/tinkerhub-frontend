@@ -35,7 +35,8 @@ function Dashboard() {
   });
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/dashboard/")
+    const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+    fetch(`${apiUrl}/api/dashboard/`)
       .then((res) => res.json())
       .then((result) => setData(result))
       .catch((err) => console.error(err));
