@@ -36,10 +36,18 @@ function Dashboard() {
 
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
-    fetch(`${apiUrl}/api/dashboard/`)
-      .then((res) => res.json())
-      .then((result) => setData(result))
-      .catch((err) => console.error(err));
+    
+    const fetchDashboard = () => {
+      fetch(`${apiUrl}/api/dashboard/`)
+        .then((res) => res.json())
+        .then((result) => setData(result))
+        .catch((err) => console.error(err));
+    };
+
+    fetchDashboard();
+
+    const interval = setInterval(fetchDashboard, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const today = new Date().toLocaleDateString("en-US", {
